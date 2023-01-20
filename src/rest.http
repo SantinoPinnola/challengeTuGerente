@@ -1,0 +1,56 @@
+### Get list of all bookings
+GET http://localhost:3000/api/booking
+
+### Get booking by id
+GET http://localhost:4000/api/booking/id
+
+###Post booking
+POST http://localhost:3000/api/booking/add
+Content-Type: application/json
+
+#Pending reservation example
+{
+    "roomDetails": "Cuarto 3 Personas",
+    "daysOfStay" : "14",
+    "clientName" : "Rodrigo Rodriguez",
+    "clientId" : "4325943"
+} 
+
+###Full reservation example
+POST http://localhost:3000/api/booking/add
+Content-Type: application/json
+
+{
+    "roomDetails": "Cuarto 3 Personas",
+    "daysOfStay" : "14",
+    "clientName" : "Rodrigo Rodriguez",
+    "clientId" : "4325943",
+    "price" : "4900",
+    "payMethod" : "Mastercard",
+    "street" : "Ayacucho",
+    "streetNumber" : "2543",
+    "codPostal" : "2053"
+} 
+
+# If only the ClientId, ClientName, daysOfStay and roomDetails are included in 
+# the reservation, the reservation will be made but it will remain Pending, 
+# if we add the billing information (price, payMethod, street, streetNumber, codPostal) the reservation will go to Paid status
+
+###Pay reservation in Pending status
+PUT http://localhost:3000/api/booking/payBooking/id
+
+{
+    "price" : "4900",
+    "payMethod" : "Mastercard",
+    "street" : "Ayacucho",
+    "streetNumber" : "2543",
+    "codPostal" : "2053"
+}
+
+###Cancel booking
+DELETE http://localhost:3000/api/booking/cancel/id
+
+
+
+
+

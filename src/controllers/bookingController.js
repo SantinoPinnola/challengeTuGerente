@@ -6,30 +6,17 @@ const tableName = 'booking';
 
 class bookingController {
 
-    checkAddBooking (error, req, res, next) {
-        console.log('BODDYYYYYYYY', req.body)
-        console.log('PASO POR ACA')
-        const {roomDetails, price, daysOfStay, payMethod, clientName, clientId, street, streetNumber, codPostal} = req.body;
 
-        if ( !roomDetails ||  !clientId || 
-            !clientName ||  !daysOfStay || 
-            typeof clientName !== 'string' || 
-            typeof street !== 'string' ||
-            typeof payMethod !== 'string' ||
-            isNaN(daysOfStay) ||
-            isNaN(price) ||
-            isNaN(streetNumber) ||
-            isNaN(clientId) ||
-            isNaN(codPostal)) {   
-        return res.status(400).json({
-            msg: 'Campos del body invalidos',
-            error : error
-        });
-        } else { next(); };
-    }
-
-    checkBookingPay (req, res, next) {
-        console.log('PASO POR AC A')
+    async checkBookingPay (req, res, next) {
+        if(req.params === '') {
+            const {id} = req.params;
+            const bookingGet = await booking.findById(id);
+            if (bookingGet.status == "Pagado") {
+                return res.status(400).json({
+                    msg : 'Reserva ya pagada'
+                });
+            }
+        }
         const {price, payMethod,street, streetNumber, codPostal} = req.body;
 
         if (price && payMethod && street && streetNumber && codPostal) {
@@ -44,29 +31,36 @@ class bookingController {
         res.json({ bookings : total });
     };
         
+    async getBookingById (req, res) {
+        const {id} = req.params;
+        const bookingGet = await booking.findById(id).lean();
+        res.json({ bookingInfo : bookingGet });
+    };
 
     async addBooking(req, res) {
         console.log('EL BODY', req.body);
         let bookingDone = await booking.create(req.body);
         res.json({
             msg : 'Reserva creada con exito',
-            status : bookingDone.status
+            status : bookingDone.status,
+            id : bookingDone.id
         })
     }
 
-    async updateProduct(req, res) {
+    async payBooking(req, res) {
         const {id} = req.params;
-        await booking.findByIdAndUpdate(id, req.body);
+        let bookingPaid = await booking.findByIdAndUpdate(id, req.body);
         res.json({
-            msg : 'Reserva actualizada con exito'
+            msg : 'Reserva actualizada con exito',
+            status : bookingPaid.status
         });
     }
 
-    async delete(req, res) {
+    async cancelBooking(req, res) {
         const {id} = req.params;
-        await booking.findByIdAndDelete(id);
+        await booking.findByIdAndUpdate(id, {status : "Cancelada"});
         res.json({
-            msg : 'Reserva borrada con exito'
+            msg : 'Reserva cancelada con exito'
         });
     }
 }

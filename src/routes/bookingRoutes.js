@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import { bookingsController } from "../controllers/bookingController.js";
+import validatePay from '../validators/pay.js';
+import validateCreate from '../validators/bookings.js';
 
 
 const router = Router();
@@ -7,13 +9,13 @@ const router = Router();
 
 router.get('/', bookingsController.getBookings);
 
-//router.get('/:id', productController.checkProductExist, productController.getProducts);
+router.get('/:id', bookingsController.getBookingById);
 
-router.post('/add', bookingsController.checkAddBooking, bookingsController.checkBookingPay, bookingsController.addBooking);
+router.post('/add', validateCreate, bookingsController.checkBookingPay, bookingsController.addBooking);
 
-router.put('/update/:id', bookingsController.updateProduct);
+router.put('/payBooking/:id', validatePay, bookingsController.checkBookingPay, bookingsController.payBooking);
 
-router.delete('/delete/:id', bookingsController.delete);
+router.delete('/cancel/:id', bookingsController.cancelBooking);
 
 
 export default router;
